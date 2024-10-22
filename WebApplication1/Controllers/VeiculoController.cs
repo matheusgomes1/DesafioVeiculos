@@ -52,5 +52,13 @@ namespace DesafioVeiculos.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletarVeiculo(int id)
+        {
+            await _veiculoService.DeletarAsync(id);
+
+            return Ok(true);
+        }
     }
 }

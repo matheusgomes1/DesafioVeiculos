@@ -193,5 +193,27 @@ namespace DesafioVeiculos.Domain.Services
 
             return veiculoDto;
         }
+
+        public async Task DeletarAsync(int veiculoId)
+        {
+            var veiculo = await _veiculoRepository.AsQueryable()
+                                .Include(v => v.Revisoes)
+                                .FirstOrDefaultAsync(v => v.Id == veiculoId);
+
+            if (veiculo == null)
+            {
+                throw new KeyNotFoundException("Veículo não encontrado.");
+            }
+
+            var revisoesParaRemover = veiculo.Revisoes;
+
+            foreach (var revisao in revisoesParaRemover)
+            {
+                veiculo.Revisoes.Remove(revisao);
+                await _revisaoRepository.DeletarAsync(revisao);
+            }
+
+            await _veiculoRepository.DeletarAsync(veiculo);
+        }
     }
 }

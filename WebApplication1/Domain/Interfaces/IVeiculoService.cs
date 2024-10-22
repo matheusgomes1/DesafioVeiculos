@@ -10,5 +10,6 @@ namespace DesafioVeiculos.Domain.Interfaces
         Task<PagedResult<VeiculoGetDto>> ObterVeiculosPaginadosAsync(int page, int pageSize, string placa, string modelo, int? ano, string cor);
         Task<VeiculoPorIdGetDto> ObterPorIdAsync(int id);
         Task AtualizarVeiculoAsync(VeiculoPutDto veiculoDto);
+        Task DeletarAsync(int veiculoId);
     }
 }
