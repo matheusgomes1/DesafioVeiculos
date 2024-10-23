@@ -6,11 +6,11 @@ namespace DesafioVeiculos.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class VeiculosController : ControllerBase
+    public class VeiculoController : ControllerBase
     {
         private readonly IVeiculoService _veiculoService;
 
-        public VeiculosController(IVeiculoService veiculoService)
+        public VeiculoController(IVeiculoService veiculoService)
         {
             _veiculoService = veiculoService;
         }
@@ -19,12 +19,11 @@ namespace DesafioVeiculos.Controllers
         public async Task<IActionResult> GetVeiculos(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10,
-            [FromQuery] string placa = null,
-            [FromQuery] string modelo = null,
-            [FromQuery] int? ano = null,
-            [FromQuery] string cor = null)
+            [FromQuery] string texto = "",
+            [FromQuery] string orderBy = "Id",
+            [FromQuery] bool desc = false)
         {
-            var result = await _veiculoService.ObterVeiculosPaginadosAsync(page, pageSize, placa, modelo, ano, cor);
+            var result = await _veiculoService.ObterVeiculosPaginadosAsync(page, pageSize, texto, orderBy, desc);
 
             return Ok(result);
         }

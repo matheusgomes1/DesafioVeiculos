@@ -5,6 +5,7 @@ using DesafioVeiculos.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using DesafioVeiculos.Domain.Dtos;
 using DesafioVeiculos.Domain.Enums;
+using System.Reflection;
 
 namespace DesafioVeiculos.Domain.Services
 {
@@ -19,21 +20,16 @@ namespace DesafioVeiculos.Domain.Services
             _revisaoRepository = revisaoRepository;
         }
 
-        public async Task<PagedResult<VeiculoGetDto>> ObterVeiculosPaginadosAsync(int page, int pageSize, string placa, string modelo, int? ano, string cor)
+        public async Task<PagedResult<VeiculoGetDto>> ObterVeiculosPaginadosAsync(int page, int pageSize, string texto, string orderBy = "Id", bool desc = false)
         {
             var query = _veiculoRepository.AsQueryable();
 
-            if (!string.IsNullOrEmpty(placa))
-                query = query.Where(v => v.Placa.Contains(placa));
+            if (int.TryParse(texto, out var ano))
+                query = query.Where(v => v.Ano == ano);
+            else if (!string.IsNullOrEmpty(texto))
+                query = query.Where(v => v.Placa.Contains(texto) || v.Cor.Contains(texto) || v.Modelo.Contains(texto));
 
-            if (!string.IsNullOrEmpty(modelo))
-                query = query.Where(v => v.Modelo.Contains(modelo));
-
-            if (ano.HasValue)
-                query = query.Where(v => v.Ano == ano.Value);
-
-            if (!string.IsNullOrEmpty(cor))
-                query = query.Where(v => v.Cor.Contains(cor));
+            query = AplicarOrdenacao(query, orderBy, desc);
 
             var totalItems = query.Count();
             var veiculos = await query.Skip((page - 1) * pageSize)
@@ -54,6 +50,24 @@ namespace DesafioVeiculos.Domain.Services
                 PageNumber = page,
                 PageSize = pageSize
             };
+        }
+
+        private IQueryable<Veiculo> AplicarOrdenacao(IQueryable<Veiculo> query, string orderBy, bool desc)
+        {
+            var propertyInfo = typeof(Veiculo).GetProperty(orderBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            if (propertyInfo == null)
+            {
+                throw new ArgumentException($"A coluna '{orderBy}' não é válida para ordenação.");
+            }
+
+            if (desc)
+            {
+                return query.OrderByDescending(p => EF.Property<object>(p, orderBy));
+            }
+            else
+            {
+                return query.OrderBy(p => EF.Property<object>(p, orderBy));
+            }
         }
 
         public async Task<Veiculo> AdicionarVeiculoAsync(VeiculoPostDto veiculoDto)

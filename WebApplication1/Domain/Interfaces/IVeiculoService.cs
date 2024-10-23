@@ -7,9 +7,9 @@ namespace DesafioVeiculos.Domain.Interfaces
     public interface IVeiculoService
     {
         Task<Veiculo> AdicionarVeiculoAsync(VeiculoPostDto veiculoDto);
-        Task<PagedResult<VeiculoGetDto>> ObterVeiculosPaginadosAsync(int page, int pageSize, string placa, string modelo, int? ano, string cor);
         Task<VeiculoPorIdGetDto> ObterPorIdAsync(int id);
         Task AtualizarVeiculoAsync(VeiculoPutDto veiculoDto);
         Task DeletarAsync(int veiculoId);
+        Task<PagedResult<VeiculoGetDto>> ObterVeiculosPaginadosAsync(int page, int pageSize, string texto, string orderBy = "Id", bool desc = false);
     }
 }
