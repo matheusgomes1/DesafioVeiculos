@@ -1,6 +1,6 @@
 # Aplicação Desafio
 
-Este projeto consiste em uma api Restful.
+Este projeto consiste em uma api Restful de demonstração.
 
 ## Funcionalidades Principais
 
