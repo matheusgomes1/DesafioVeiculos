@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using DesafioVeiculos.Domain.Dtos;
 using DesafioVeiculos.Domain.Enums;
 using System.Reflection;
+using DesafioVeiculos.Infra.Core.Services;
 
 namespace DesafioVeiculos.Domain.Services
 {
@@ -13,11 +14,13 @@ namespace DesafioVeiculos.Domain.Services
     {
         private readonly IRepository<Veiculo> _veiculoRepository;
         private readonly IRepository<Revisao> _revisaoRepository;
+        private readonly INotification _notification;
 
-        public VeiculoService(IRepository<Veiculo> veiculoRepository, IRepository<Revisao> revisaoRepository)
+        public VeiculoService(IRepository<Veiculo> veiculoRepository, IRepository<Revisao> revisaoRepository, INotification notification)
         {
             _veiculoRepository = veiculoRepository;
             _revisaoRepository = revisaoRepository;
+            _notification = notification;
         }
 
         public async Task<PagedResult<VeiculoGetDto>> ObterVeiculosPaginadosAsync(int page, int pageSize, string texto, string orderBy = "Id", bool desc = false)
@@ -97,7 +100,8 @@ namespace DesafioVeiculos.Domain.Services
             }
             else
             {
-                throw new ArgumentException("Tipo de veículo inválido");
+                _notification.Add(new("Tipo de veículo inválido"));
+                return null;
             }
 
             if (veiculoDto.Revisoes != null && veiculoDto.Revisoes.Any())
@@ -122,7 +126,8 @@ namespace DesafioVeiculos.Domain.Services
 
             if (veiculo == null)
             {
-                throw new KeyNotFoundException("Veículo não encontrado.");
+                _notification.Add(new("Veículo não encontrado."));
+                return;
             }
 
             veiculo.Placa = veiculoDto.Placa;
@@ -183,7 +188,8 @@ namespace DesafioVeiculos.Domain.Services
 
             if (veiculo == null)
             {
-                throw new KeyNotFoundException("Veículo não encontrado.");
+                _notification.Add(new("Veículo não encontrado."));
+                return null;
             }
 
             var veiculoDto = new VeiculoPorIdGetDto
@@ -216,7 +222,8 @@ namespace DesafioVeiculos.Domain.Services
 
             if (veiculo == null)
             {
-                throw new KeyNotFoundException("Veículo não encontrado.");
+                _notification.Add(new("Veículo não encontrado."));
+                return;
             }
 
             var revisoesParaRemover = veiculo.Revisoes;

@@ -1,16 +1,19 @@
 ﻿using DesafioVeiculos.Domain.Dtos;
 using DesafioVeiculos.Domain.Interfaces;
+using DesafioVeiculos.Infra.Core.Controller;
+using DesafioVeiculos.Infra.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DesafioVeiculos.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class VeiculoController : ControllerBase
+    public class VeiculoController : BaseApiController
     {
         private readonly IVeiculoService _veiculoService;
 
-        public VeiculoController(IVeiculoService veiculoService)
+        public VeiculoController(IVeiculoService veiculoService, INotification notification)
+            :base(notification)
         {
             _veiculoService = veiculoService;
         }
@@ -25,7 +28,7 @@ namespace DesafioVeiculos.Controllers
         {
             var result = await _veiculoService.ObterVeiculosPaginadosAsync(page, pageSize, texto, orderBy, desc);
 
-            return Ok(result);
+            return CustomResponse(result);
         }
 
         [HttpPost]
@@ -33,7 +36,7 @@ namespace DesafioVeiculos.Controllers
         {
             await _veiculoService.AdicionarVeiculoAsync(dto);
 
-            return Ok(true);
+            return CustomResponse(true);
         }
 
         [HttpPut]
@@ -41,7 +44,7 @@ namespace DesafioVeiculos.Controllers
         {
             await _veiculoService.AtualizarVeiculoAsync(dto);
 
-            return Ok(true);
+            return CustomResponse(true);
         }
 
         [HttpGet("ObterPorId/{id}")]
@@ -49,7 +52,7 @@ namespace DesafioVeiculos.Controllers
         {
             var result = await _veiculoService.ObterPorIdAsync(id);
 
-            return Ok(result);
+            return CustomResponse(result);
         }
 
         [HttpDelete("{id}")]
@@ -57,7 +60,7 @@ namespace DesafioVeiculos.Controllers
         {
             await _veiculoService.DeletarAsync(id);
 
-            return Ok(true);
+            return CustomResponse(true);
         }
     }
 }

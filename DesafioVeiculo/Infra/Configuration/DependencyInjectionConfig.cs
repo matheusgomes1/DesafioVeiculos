@@ -1,5 +1,6 @@
 ﻿using DesafioVeiculos.Domain.Interfaces;
 using DesafioVeiculos.Domain.Services;
+using DesafioVeiculos.Infra.Core.Services;
 using DesafioVeiculos.Infra.Data;
 using DesafioVeiculos.Infra.Data.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ namespace DesafioVeiculos.Infra.Configuration
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<IVeiculoService, VeiculoService>();
+
+            services.AddScoped<INotification, Notification>();
 
             services.AddControllers();
 
