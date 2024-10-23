@@ -20,6 +20,18 @@ namespace DesafioVeiculos.Infra.Configuration
             services.AddScoped<IVeiculoService, VeiculoService>();
 
             services.AddControllers();
+
+            string[] policys = configuration["Origins"].Split(",");
+
+            services.AddCors(opt => opt.AddPolicy("CorsPolicy",
+              builder =>
+              {
+                  builder
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials()
+                      .WithOrigins(policys);
+              }));
         }
 
     }
